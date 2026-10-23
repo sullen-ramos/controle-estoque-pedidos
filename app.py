@@ -4,7 +4,7 @@ from datetime import datetime, date
 
 from flask import Flask, render_template, request, redirect, url_for
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="modelos")
 
 CAMINHO_BANCO = os.path.join(app.root_path, "estoque.db")
 
