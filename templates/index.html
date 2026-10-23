@@ -1,0 +1,789 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel Inicial | Controle de Estoque e Pedidos</title>
+
+    <style>
+        :root {
+            --azul: #3478B8;
+            --azul-hover: #28669F;
+            --azul-escuro: #243447;
+            --azul-profundo: #1B2838;
+            --azul-claro: #E8F1FA;
+            --fundo: #F4F6F9;
+            --branco: #FFFFFF;
+            --texto: #243447;
+            --texto-suave: #64748B;
+            --borda: #E1E6ED;
+            --verde: #198754;
+            --verde-claro: #E7F5EC;
+            --vermelho: #B42318;
+            --vermelho-claro: #FDECEC;
+            --amarelo: #B45309;
+            --amarelo-claro: #FFF4DB;
+            --sombra: 0 2px 8px rgba(36, 52, 71, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--fundo);
+            color: var(--texto);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+
+        /* Cabeçalho discreto */
+
+        header {
+            background: var(--azul-escuro);
+            color: white;
+            padding: 22px 26px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+        }
+
+        .cabecalho-conteudo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .marca-icone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.10);
+            color: white;
+            font-size: 23px;
+        }
+
+        header h1 {
+            font-size: 23px;
+            line-height: 1.3;
+            margin: 0 0 4px;
+            font-weight: 600;
+        }
+
+        header p {
+            margin: 0;
+            line-height: 1.5;
+            color: #DCE5EF;
+            font-size: 13px;
+        }
+
+        .data-atual {
+            color: #E2E8F0;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        /* Navegação */
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 26px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        nav a {
+            display: inline-block;
+            background: transparent;
+            color: var(--texto-suave);
+            padding: 9px 13px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 13px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        nav a:first-child {
+            background: var(--azul-claro);
+            color: var(--azul-escuro);
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            background: var(--azul-claro);
+            color: var(--azul-escuro);
+        }
+
+        /* Títulos */
+
+        .titulo-secao {
+            margin: 0 0 14px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--azul-escuro);
+        }
+
+        /* Indicadores */
+
+        .indicadores {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .cartao-indicador {
+            background: var(--branco);
+            padding: 18px;
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+            min-width: 0;
+        }
+
+        .indicador-titulo {
+            color: var(--texto-suave);
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 0 0 10px;
+        }
+
+        .numero {
+            font-size: 29px;
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--azul-escuro);
+            overflow-wrap: anywhere;
+        }
+
+        .cartao-indicador.perigo .numero {
+            color: var(--vermelho);
+        }
+
+        .indicador-descricao {
+            color: var(--texto-suave);
+            font-size: 11px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        /* Acesso rápido */
+
+        .atalhos {
+            margin-bottom: 28px;
+        }
+
+        .grade-atalhos {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .atalho {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: var(--branco);
+            border: 1px solid var(--borda);
+            border-radius: 9px;
+            text-decoration: none;
+            color: var(--texto);
+            transition: background 0.2s, border-color 0.2s;
+            min-width: 0;
+        }
+
+        .atalho:hover {
+            background: #F8FBFE;
+            border-color: #B8CFE5;
+        }
+
+        .atalho-icone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            background: var(--azul-claro);
+            color: var(--azul);
+            font-size: 19px;
+        }
+
+        .atalho strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            line-height: 1.4;
+        }
+
+        .atalho small {
+            display: block;
+            color: var(--texto-suave);
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* Seções e tabelas */
+
+        .secao {
+            background: var(--branco);
+            padding: 22px;
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: var(--sombra);
+            min-width: 0;
+        }
+
+        .secao-cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .secao-cabecalho .titulo-secao {
+            margin: 0;
+        }
+
+        .link-acao {
+            display: inline-block;
+            background: var(--azul);
+            color: white;
+            text-decoration: none;
+            padding: 9px 13px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .link-acao:hover {
+            background: var(--azul-hover);
+        }
+
+        .tabela-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 580px;
+        }
+
+        th,
+        td {
+            padding: 13px 12px;
+            text-align: left;
+            border-bottom: 1px solid #EDF0F4;
+            font-size: 13px;
+        }
+
+        th {
+            background: #F7F9FC;
+            color: var(--texto-suave);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            font-weight: 600;
+        }
+
+        td {
+            color: #475569;
+        }
+
+        td strong {
+            color: var(--texto);
+            font-weight: 600;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #FAFBFD;
+        }
+
+        .alerta {
+            color: var(--vermelho);
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 5px;
+            background: var(--verde-claro);
+            color: var(--verde);
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-alerta {
+            background: var(--vermelho-claro);
+            color: var(--vermelho);
+        }
+
+        .tipo-entrada {
+            color: var(--verde);
+            font-weight: 600;
+        }
+
+        .tipo-saida {
+            color: var(--vermelho);
+            font-weight: 600;
+        }
+
+        .vazio {
+            padding: 22px 16px;
+            text-align: center;
+            color: var(--texto-suave);
+            background: #FAFBFD;
+            border: 1px dashed var(--borda);
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .vazio strong {
+            color: var(--texto);
+        }
+
+        .rodape {
+            text-align: center;
+            padding: 12px 0 4px;
+            color: var(--texto-suave);
+            font-size: 11px;
+        }
+
+        a:focus-visible {
+            outline: 3px solid #8BBBE8;
+            outline-offset: 3px;
+        }
+
+        /* Responsividade */
+
+        @media (max-width: 1100px) {
+            .indicadores {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .grade-atalhos {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 14px;
+            }
+
+            header {
+                padding: 19px;
+            }
+
+            .cabecalho-conteudo {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .marca {
+                align-items: flex-start;
+                gap: 11px;
+            }
+
+            .marca-icone {
+                width: 38px;
+                height: 38px;
+                font-size: 20px;
+            }
+
+            header h1 {
+                font-size: 20px;
+            }
+
+            header p {
+                font-size: 12px;
+            }
+
+            nav {
+                gap: 4px;
+                margin-bottom: 22px;
+            }
+
+            nav a {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .indicadores {
+                gap: 10px;
+                margin-bottom: 24px;
+            }
+
+            .cartao-indicador {
+                padding: 14px;
+            }
+
+            .numero {
+                font-size: 25px;
+            }
+
+            .indicador-descricao {
+                font-size: 10px;
+            }
+
+            .grade-atalhos {
+                gap: 9px;
+            }
+
+            .atalho {
+                padding: 12px;
+                gap: 9px;
+            }
+
+            .atalho-icone {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
+            .atalho strong {
+                font-size: 12px;
+            }
+
+            .atalho small {
+                font-size: 10px;
+            }
+
+            .secao {
+                padding: 15px;
+            }
+
+            .secao-cabecalho {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .secao-cabecalho .titulo-secao {
+                font-size: 16px;
+            }
+
+            th,
+            td {
+                padding: 11px 9px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .indicadores,
+            .grade-atalhos {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <div class="cabecalho-conteudo">
+            <div class="marca">
+                <div class="marca-icone" aria-hidden="true">▦</div>
+                <div>
+                    <h1>Controle de Estoque e Pedidos</h1>
+                    <p>Gestão de ingredientes e pedidos do negócio.</p>
+                </div>
+            </div>
+
+            <div class="data-atual" id="data-atual">
+                Painel de controle
+            </div>
+        </div>
+    </header>
+
+    <nav aria-label="Navegação principal">
+        <a href="/" aria-current="page">Início</a>
+        <a href="/ingredientes">Ingredientes</a>
+        <a href="/movimentacoes">Movimentações</a>
+        <a href="/pedidos">Pedidos</a>
+        <a href="/produtos">Produtos e receitas</a>
+    </nav>
+
+    <section aria-labelledby="titulo-resumo">
+        <h2 class="titulo-secao" id="titulo-resumo">Visão geral</h2>
+
+        <div class="indicadores">
+
+            <div class="cartao-indicador">
+                <p class="indicador-titulo">Ingredientes cadastrados</p>
+                <div class="numero">{{ total_ingredientes }}</div>
+                <div class="indicador-descricao">
+                    Total registrado no sistema
+                </div>
+            </div>
+
+            <div class="cartao-indicador {% if estoque_baixo > 0 %}perigo{% endif %}">
+                <p class="indicador-titulo">Estoque baixo</p>
+                <div class="numero">{{ estoque_baixo }}</div>
+                <div class="indicador-descricao">
+                    {% if estoque_baixo > 0 %}
+                        Ingredientes que precisam de reposição
+                    {% else %}
+                        Nenhuma reposição necessária
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="cartao-indicador">
+                <p class="indicador-titulo">Produtos cadastrados</p>
+                <div class="numero">{{ total_produtos }}</div>
+                <div class="indicador-descricao">
+                    Produtos registrados no sistema
+                </div>
+            </div>
+
+            <div class="cartao-indicador">
+                <p class="indicador-titulo">Pedidos não entregues</p>
+                <div class="numero">{{ total_pedidos }}</div>
+                <div class="indicador-descricao">
+                    Pedidos em andamento
+                </div>
+            </div>
+
+        </div>
+
+        <div class="cartao-indicador" style="margin-bottom: 28px;">
+            <p class="indicador-titulo">Entregas pendentes de hoje</p>
+            <div class="numero">{{ pedidos_hoje }}</div>
+            <div class="indicador-descricao">
+                Pedidos previstos para hoje que ainda não foram entregues
+            </div>
+        </div>
+    </section>
+
+    <section class="atalhos" aria-labelledby="titulo-atalhos">
+        <h2 class="titulo-secao" id="titulo-atalhos">Acesso rápido</h2>
+
+        <div class="grade-atalhos">
+
+            <a class="atalho" href="/ingredientes">
+                <div class="atalho-icone" aria-hidden="true">+</div>
+                <div>
+                    <strong>Ingredientes</strong>
+                    <small>Cadastrar e consultar</small>
+                </div>
+            </a>
+
+            <a class="atalho" href="/movimentacoes">
+                <div class="atalho-icone" aria-hidden="true">↔</div>
+                <div>
+                    <strong>Movimentações</strong>
+                    <small>Entradas e saídas</small>
+                </div>
+            </a>
+
+            <a class="atalho" href="/produtos">
+                <div class="atalho-icone" aria-hidden="true">▤</div>
+                <div>
+                    <strong>Produtos e receitas</strong>
+                    <small>Consultar produtos</small>
+                </div>
+            </a>
+
+            <a class="atalho" href="/pedidos">
+                <div class="atalho-icone" aria-hidden="true">☷</div>
+                <div>
+                    <strong>Pedidos</strong>
+                    <small>Acompanhar encomendas</small>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <section class="secao" aria-labelledby="titulo-reposicao">
+        <div class="secao-cabecalho">
+            <h2 class="titulo-secao" id="titulo-reposicao">
+                Ingredientes para reposição
+            </h2>
+
+            <a class="link-acao" href="/movimentacoes">
+                Registrar entrada
+            </a>
+        </div>
+
+        {% if baixo_estoque %}
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ingrediente</th>
+                            <th>Categoria</th>
+                            <th>Quantidade atual</th>
+                            <th>Estoque mínimo</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for ingrediente in baixo_estoque %}
+                            <tr>
+                                <td><strong>{{ ingrediente.nome }}</strong></td>
+                                <td>{{ ingrediente.categoria }}</td>
+
+                                <td class="alerta">
+                                    {{ ingrediente.quantidade }}
+                                    {{ ingrediente.unidade }}
+                                </td>
+
+                                <td>
+                                    {{ ingrediente.minimo }}
+                                    {{ ingrediente.unidade }}
+                                </td>
+
+                                <td>
+                                    <span class="status status-alerta">
+                                        Repor estoque
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="vazio">
+                <strong>Estoque em dia!</strong><br>
+                Todos os ingredientes estão acima do estoque mínimo.
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="secao" aria-labelledby="titulo-movimentacoes">
+        <div class="secao-cabecalho">
+            <h2 class="titulo-secao" id="titulo-movimentacoes">
+                Últimas movimentações
+            </h2>
+
+            <a class="link-acao" href="/movimentacoes">
+                Ver movimentações
+            </a>
+        </div>
+
+        {% if historico %}
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ingrediente</th>
+                            <th>Tipo</th>
+                            <th>Quantidade</th>
+                            <th>Data e hora</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for movimento in historico %}
+                            <tr>
+                                <td><strong>{{ movimento.nome }}</strong></td>
+
+                                <td>
+                                    {% if movimento.tipo == "entrada" %}
+                                        <span class="tipo-entrada">Entrada</span>
+                                    {% else %}
+                                        <span class="tipo-saida">Saída</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ movimento.quantidade }}
+                                    {{ movimento.unidade }}
+                                </td>
+
+                                <td>{{ movimento.data_hora }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="vazio">
+                Nenhuma movimentação registrada ainda.
+            </div>
+        {% endif %}
+    </section>
+
+    <footer class="rodape">
+        Controle de Estoque e Pedidos
+    </footer>
+
+</div>
+
+<script>
+    function atualizarData() {
+        const elemento = document.getElementById("data-atual");
+        const agora = new Date();
+
+        const dataFormatada = agora.toLocaleDateString("pt-BR", {
+            weekday: "long",
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+
+        elemento.textContent =
+            dataFormatada.charAt(0).toUpperCase() +
+            dataFormatada.slice(1);
+    }
+
+    atualizarData();
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos | Controle de Estoque</title>
+
+    <style>
+        :root {
+            --azul: #3478B8;
+            --azul-hover: #28669F;
+            --azul-escuro: #243447;
+            --fundo: #F1F4F8;
+            --branco: #FFFFFF;
+            --texto: #243447;
+            --texto-suave: #64748B;
+            --borda: #DCE3EB;
+            --verde: #198754;
+            --verde-claro: #E7F5EC;
+            --vermelho: #B42318;
+            --vermelho-claro: #FDECEC;
+            --amarelo: #B45309;
+            --amarelo-claro: #FFF4DB;
+            --sombra: 0 4px 16px rgba(36, 52, 71, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--fundo);
+            color: var(--texto);
+        }
+
+        header {
+            background: var(--branco);
+            border-bottom: 1px solid var(--borda);
+            padding: 22px 32px;
+        }
+
+        .cabecalho-conteudo {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            margin: 0 0 7px;
+            color: var(--azul-escuro);
+            font-size: 25px;
+        }
+
+        header p {
+            margin: 0 0 18px;
+            color: var(--texto-suave);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav a {
+            padding: 8px 12px;
+            border: 1px solid var(--borda);
+            border-radius: 7px;
+            color: var(--texto);
+            background: var(--branco);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        nav a:hover,
+        nav a.ativo {
+            color: var(--azul);
+            border-color: var(--azul);
+            background: #F2F7FC;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 28px auto;
+            padding: 0 24px 35px;
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-bottom: 22px;
+            color: var(--azul);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .voltar:hover {
+            text-decoration: underline;
+        }
+
+        .cartao {
+            background: var(--branco);
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            padding: 26px;
+            margin-bottom: 22px;
+            box-shadow: var(--sombra);
+        }
+
+        .cartao-cabecalho {
+            margin-bottom: 22px;
+        }
+
+        h2 {
+            color: var(--azul-escuro);
+            font-size: 18px;
+            margin: 0 0 7px;
+        }
+
+        .descricao-secao {
+            color: var(--texto-suave);
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .mensagem {
+            padding: 13px 16px;
+            border: 1px solid #F0D59A;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: var(--amarelo-claro);
+            color: var(--amarelo);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .grade {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px 20px;
+        }
+
+        .campo {
+            min-width: 0;
+            margin-bottom: 17px;
+        }
+
+        .grade .campo {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--texto);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input,
+        select,
+        textarea {
+            display: block;
+            width: 100%;
+            min-height: 43px;
+            padding: 11px 12px;
+            border: 1px solid var(--borda);
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--texto);
+            background: var(--branco);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--azul);
+            box-shadow: 0 0 0 3px rgba(52, 120, 184, 0.12);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #94A3B8;
+        }
+
+        textarea {
+            min-height: 95px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .texto-apoio {
+            margin: 9px 0 14px;
+            color: var(--texto-suave);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .linha-produto {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(120px, 1fr) auto;
+            gap: 12px;
+            align-items: end;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid var(--borda);
+            border-radius: 9px;
+            background: #FAFBFD;
+        }
+
+        .linha-produto .campo {
+            margin-bottom: 0;
+        }
+
+        .linha-produto label {
+            font-size: 12px;
+        }
+
+        button {
+            min-height: 41px;
+            padding: 10px 16px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: var(--azul);
+            color: var(--branco);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        button:hover {
+            background: var(--azul-hover);
+        }
+
+        button:focus-visible {
+            outline: 3px solid rgba(52, 120, 184, 0.3);
+            outline-offset: 2px;
+        }
+
+        .secundario {
+            background: var(--branco);
+            color: var(--azul);
+            border-color: var(--borda);
+        }
+
+        .secundario:hover {
+            background: #F2F7FC;
+            border-color: var(--azul);
+        }
+
+        .botao-remover {
+            color: var(--vermelho);
+            background: var(--branco);
+            border-color: #F0D1CE;
+        }
+
+        .botao-remover:hover {
+            color: var(--vermelho);
+            background: var(--vermelho-claro);
+            border-color: #E8B8B3;
+        }
+
+        .acoes-produtos {
+            margin-top: 14px;
+        }
+
+        .acoes-formulario {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 20px;
+            margin-top: 22px;
+            border-top: 1px solid #EDF0F4;
+        }
+
+        .aviso {
+            padding: 12px 14px;
+            margin-top: 14px;
+            border: 1px solid #F0DDAA;
+            border-radius: 8px;
+            background: var(--amarelo-claro);
+            color: #79530A;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .aviso a {
+            color: var(--azul-hover);
+            font-weight: 600;
+        }
+
+        .pedido {
+            padding: 20px;
+            margin-top: 14px;
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            background: var(--branco);
+        }
+
+        .pedido-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+        }
+
+        .pedido h3 {
+            margin: 0 0 12px;
+            color: var(--azul-escuro);
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .muted {
+            color: var(--texto-suave);
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .muted strong {
+            color: var(--texto);
+        }
+
+        .etiqueta {
+            display: inline-block;
+            flex-shrink: 0;
+            padding: 6px 10px;
+            border: 1px solid var(--borda);
+            border-radius: 6px;
+            background: #F2F5F9;
+            color: var(--azul-escuro);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid #EDF0F4;
+            max-width: 520px;
+        }
+
+        .status-form label {
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .status-form select {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pedido .aviso {
+            margin-top: 14px;
+        }
+
+        .vazio {
+            padding: 24px 16px;
+            border: 1px dashed var(--borda);
+            border-radius: 8px;
+            color: var(--texto-suave);
+            font-size: 14px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        @media (max-width: 750px) {
+            header {
+                padding: 22px 20px;
+            }
+
+            main {
+                margin: 22px auto;
+                padding: 0 16px 25px;
+            }
+
+            .cartao {
+                padding: 20px 16px;
+            }
+
+            .grade {
+                grid-template-columns: 1fr;
+                gap: 17px;
+            }
+
+            .linha-produto {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                padding: 13px;
+            }
+
+            .linha-produto .campo:first-child {
+                grid-column: 1 / -1;
+            }
+
+            .linha-produto .botao-remover {
+                grid-column: 1 / -1;
+                width: 100%;
+            }
+
+            .pedido-topo {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .status-form {
+                flex-wrap: wrap;
+                max-width: none;
+            }
+
+            .status-form label {
+                width: 100%;
+            }
+
+            .status-form select {
+                flex-basis: 150px;
+            }
+
+            .acoes-formulario button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .linha-produto {
+                grid-template-columns: 1fr;
+            }
+
+            .linha-produto .campo:first-child,
+            .linha-produto .botao-remover {
+                grid-column: auto;
+            }
+
+            .status-form select {
+                flex-basis: 100%;
+            }
+
+            .status-form button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div class="cabecalho-conteudo">
+        <h1>Controle de Estoque e Pedidos</h1>
+        <p>Gerencie os pedidos e acompanhe as entregas.</p>
+
+        <nav aria-label="Navegação principal">
+            <a href="/">Início</a>
+            <a href="/ingredientes">Ingredientes</a>
+            <a href="/movimentacoes">Movimentações</a>
+            <a href="/pedidos" class="ativo">Pedidos</a>
+            <a href="/produtos">Produtos e receitas</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <a class="voltar" href="/">← Voltar ao painel</a>
+
+    {% if mensagem %}
+    <div class="mensagem" role="alert">
+        {{ mensagem }}
+    </div>
+    {% endif %}
+
+    <section class="cartao">
+        <div class="cartao-cabecalho">
+            <h2>Cadastrar pedido</h2>
+            <p class="descricao-secao">
+                Informe os dados do cliente, a data de entrega e os produtos solicitados.
+            </p>
+        </div>
+
+        <form method="POST" action="{{ url_for('pedidos') }}">
+            <div class="grade">
+                <div class="campo">
+                    <label for="cliente">Nome do cliente *</label>
+                    <input
+                        id="cliente"
+                        name="cliente"
+                        type="text"
+                        maxlength="150"
+                        required
+                        placeholder="Nome completo"
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="telefone">Telefone</label>
+                    <input
+                        id="telefone"
+                        name="telefone"
+                        type="tel"
+                        placeholder="Telefone para contato"
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="data_pedido">Data do pedido *</label>
+                    <input
+                        id="data_pedido"
+                        name="data_pedido"
+                        type="date"
+                        value="{{ hoje }}"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="data_entrega">Data de entrega *</label>
+                    <input
+                        id="data_entrega"
+                        name="data_entrega"
+                        type="date"
+                        min="{{ hoje }}"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="valor_total">Valor total (R$) *</label>
+                    <input
+                        id="valor_total"
+                        name="valor_total"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value="0.00"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="campo" style="margin-top: 26px;">
+                <label>Produtos do pedido</label>
+
+                <p class="texto-apoio">
+                    Selecione os produtos cadastrados e informe a quantidade pedida.
+                    O sistema utilizará as receitas para calcular o consumo dos ingredientes.
+                </p>
+
+                <div id="itens-produtos">
+                    <div class="linha-produto">
+                        <div class="campo">
+                            <label>Produto</label>
+
+                            <select name="produto_id[]">
+                                <option value="">Selecione um produto</option>
+
+                                {% for produto in produtos %}
+                                <option value="{{ produto.id }}">
+                                    {{ produto.nome }}
+                                    — R$ {{ "%.2f"|format(produto.preco_venda or 0) }}
+                                    (rendimento: {{ "%.2f"|format(produto.rendimento or 0) }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label>Quantidade pedida</label>
+
+                            <input
+                                name="quantidade_produto[]"
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="Ex.: 100"
+                            >
+                        </div>
+
+                        <button
+                            type="button"
+                            class="secundario botao-remover"
+                            onclick="removerLinha(this)"
+                        >
+                            Remover
+                        </button>
+                    </div>
+                </div>
+
+                <div class="acoes-produtos">
+                    <button
+                        type="button"
+                        class="secundario"
+                        onclick="adicionarLinha()"
+                    >
+                        + Adicionar produto
+                    </button>
+                </div>
+
+                {% if not produtos %}
+                <div class="aviso">
+                    Você ainda não cadastrou produtos.
+                    Acesse <a href="/produtos">Produtos e receitas</a> para cadastrar
+                    um produto com sua receita antes de vinculá-lo a um pedido.
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="campo" style="margin-top: 24px;">
+                <label for="descricao">Observações ou descrição adicional</label>
+
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    placeholder="Ex.: horário de entrega, observações do cliente ou detalhes adicionais."
+                ></textarea>
+            </div>
+
+            <div class="acoes-formulario">
+                <button type="submit">Cadastrar pedido</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="cartao">
+        <div class="cartao-cabecalho">
+            <h2>Pedidos cadastrados</h2>
+            <p class="descricao-secao">
+                Consulte os pedidos registrados e atualize o andamento de cada um.
+            </p>
+        </div>
+
+        {% if pedidos %}
+            {% for pedido in pedidos %}
+            <article class="pedido">
+                <div class="pedido-topo">
+                    <div>
+                        <h3>Pedido #{{ pedido.id }} — {{ pedido.cliente }}</h3>
+
+                        <div class="muted">
+                            {% if pedido.telefone %}
+                            Telefone: {{ pedido.telefone }}<br>
+                            {% endif %}
+
+                            Data do pedido: {{ pedido.data_pedido }}<br>
+                            Data de entrega: {{ pedido.data_entrega }}<br>
+
+                            Valor total:
+                            <strong>
+                                R$ {{ "%.2f"|format(pedido.valor_total or 0) }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <span class="etiqueta">{{ pedido.status }}</span>
+                </div>
+
+                {% if itens_por_pedido.get(pedido.id) %}
+                <p class="muted">
+                    <strong>Produtos:</strong>
+
+                    {% for item in itens_por_pedido.get(pedido.id) %}
+                    {{ "%g"|format(item.quantidade or 0) }}
+                    × {{ item.nome }}{% if not loop.last %}; {% endif %}
+                    {% endfor %}
+                </p>
+                {% endif %}
+
+                {% if pedido.descricao %}
+                <p class="muted">
+                    <strong>Observações:</strong>
+                    {{ pedido.descricao }}
+                </p>
+                {% endif %}
+
+                {% if pedido.estoque_baixado %}
+                <div class="aviso">
+                    Os ingredientes deste pedido já foram descontados do estoque.
+                </div>
+
+                {% elif not itens_por_pedido.get(pedido.id) %}
+                <div class="aviso">
+                    Este pedido não possui produtos vinculados às receitas.
+                    A alteração de status não descontará ingredientes automaticamente.
+                </div>
+                {% endif %}
+
+                <form
+                    class="status-form"
+                    method="POST"
+                    action="{{ url_for(
+                        'atualizar_status_pedido',
+                        pedido_id=pedido.id
+                    ) }}"
+                >
+                    <label for="status-{{ pedido.id }}">Status do pedido</label>
+
+                    <select
+                        id="status-{{ pedido.id }}"
+                        name="status"
+                    >
+                        {% for status in status_pedidos %}
+                        <option
+                            value="{{ status }}"
+                            {% if pedido.status == status %}selected{% endif %}
+                        >
+                            {{ status }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit">Atualizar</button>
+                </form>
+            </article>
+            {% endfor %}
+
+        {% else %}
+        <div class="vazio">
+            Nenhum pedido cadastrado ainda.
+            <br>
+            Utilize o formulário acima para registrar o primeiro pedido.
+        </div>
+        {% endif %}
+    </section>
+</main>
+
+<script>
+    function adicionarLinha() {
+        const container = document.getElementById("itens-produtos");
+        const primeiraLinha = container.querySelector(".linha-produto");
+        const novaLinha = primeiraLinha.cloneNode(true);
+
+        novaLinha.querySelector("select").value = "";
+        novaLinha.querySelector("input").value = "";
+
+        container.appendChild(novaLinha);
+    }
+
+    function removerLinha(botao) {
+        const container = document.getElementById("itens-produtos");
+        const linhas = container.querySelectorAll(".linha-produto");
+
+        if (linhas.length > 1) {
+            botao.closest(".linha-produto").remove();
+        } else {
+            linhas[0].querySelector("select").value = "";
+            linhas[0].querySelector("input").value = "";
+        }
+    }
+</script>
+
+</body>
+</html>

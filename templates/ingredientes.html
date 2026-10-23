@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredientes | Controle de Estoque</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul: #3478B8;
+            --azul-hover: #28669F;
+            --azul-escuro: #243447;
+            --fundo: #F1F4F8;
+            --branco: #FFFFFF;
+            --texto: #243447;
+            --texto-suave: #64748B;
+            --borda: #DCE3EB;
+            --verde: #198754;
+            --verde-claro: #E7F5EC;
+            --vermelho: #B42318;
+            --vermelho-claro: #FDECEC;
+            --sombra: 0 4px 16px rgba(36, 52, 71, 0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--fundo);
+            color: var(--texto);
+        }
+
+        header {
+            background: var(--branco);
+            border-bottom: 1px solid var(--borda);
+            padding: 24px 32px;
+        }
+
+        .cabecalho-conteudo {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            margin: 0 0 7px;
+            font-size: 25px;
+            font-weight: 700;
+            color: var(--azul-escuro);
+        }
+
+        header p {
+            margin: 0;
+            color: var(--texto-suave);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 28px auto;
+            padding: 0 24px;
+        }
+
+        .voltar {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 22px;
+            color: var(--azul);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .voltar:hover {
+            color: var(--azul-hover);
+            text-decoration: underline;
+        }
+
+        .mensagem-erro,
+        .mensagem-sucesso {
+            padding: 13px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .mensagem-erro {
+            background: var(--vermelho-claro);
+            color: var(--vermelho);
+            border: 1px solid #F3C5C1;
+        }
+
+        .mensagem-sucesso {
+            background: var(--verde-claro);
+            color: var(--verde);
+            border: 1px solid #B9DCC5;
+        }
+
+        .secao {
+            background: var(--branco);
+            padding: 26px;
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            margin-bottom: 22px;
+            box-shadow: var(--sombra);
+        }
+
+        .secao-cabecalho {
+            margin-bottom: 22px;
+        }
+
+        .secao h2 {
+            margin: 0 0 7px;
+            color: var(--azul-escuro);
+            font-size: 18px;
+        }
+
+        .descricao {
+            margin: 0;
+            color: var(--texto-suave);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .campos {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .campo {
+            min-width: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--texto);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            display: block;
+            width: 100%;
+            min-height: 43px;
+            padding: 11px 12px;
+            border: 1px solid var(--borda);
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--texto);
+            background: var(--branco);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input::placeholder {
+            color: #94A3B8;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--azul);
+            box-shadow: 0 0 0 3px rgba(52, 120, 184, 0.12);
+        }
+
+        .acoes-formulario {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #EDF0F4;
+        }
+
+        button {
+            min-height: 42px;
+            padding: 11px 19px;
+            border: none;
+            border-radius: 7px;
+            background: var(--azul);
+            color: var(--branco);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--azul-hover);
+        }
+
+        button:focus-visible {
+            outline: 3px solid rgba(52, 120, 184, 0.3);
+            outline-offset: 2px;
+        }
+
+        .lista-cabecalho {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .lista-cabecalho .secao-cabecalho {
+            margin-bottom: 0;
+        }
+
+        .tabela-container {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--borda);
+            border-radius: 8px;
+        }
+
+        .tabela {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .tabela th,
+        .tabela td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #EDF0F4;
+            font-size: 13px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .tabela th {
+            background: #F7F9FC;
+            color: var(--texto-suave);
+            font-weight: 600;
+        }
+
+        .tabela td {
+            color: var(--texto);
+        }
+
+        .tabela tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tabela tbody tr:hover {
+            background: #FAFBFD;
+        }
+
+        .nome-ingrediente {
+            font-weight: 600;
+        }
+
+        .situacao {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .alerta {
+            color: var(--vermelho);
+            background: var(--vermelho-claro);
+        }
+
+        .adequado {
+            color: var(--verde);
+            background: var(--verde-claro);
+        }
+
+        .vazio {
+            padding: 24px 16px;
+            border: 1px dashed var(--borda);
+            border-radius: 8px;
+            color: var(--texto-suave);
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 700px) {
+            header {
+                padding: 22px 20px;
+            }
+
+            main {
+                margin: 22px auto;
+                padding: 0 16px;
+            }
+
+            .secao {
+                padding: 20px 16px;
+            }
+
+            .campos {
+                grid-template-columns: 1fr;
+                gap: 17px;
+            }
+
+            .acoes-formulario {
+                justify-content: stretch;
+            }
+
+            .acoes-formulario button {
+                width: 100%;
+            }
+
+            .tabela th,
+            .tabela td {
+                padding: 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="cabecalho-conteudo">
+            <h1>Cadastro de Ingredientes</h1>
+            <p>Gerencie os ingredientes e acompanhe os níveis de estoque.</p>
+        </div>
+    </header>
+
+    <main>
+        <a class="voltar" href="/">← Voltar ao painel</a>
+
+        {% if mensagem %}
+        <div class="mensagem-erro" role="alert">
+            {{ mensagem }}
+        </div>
+        {% endif %}
+
+        <section class="secao">
+            <div class="secao-cabecalho">
+                <h2>Novo ingrediente</h2>
+                <p class="descricao">
+                    Preencha os dados abaixo para adicionar um ingrediente ao estoque.
+                </p>
+            </div>
+
+            <form action="/ingredientes" method="POST" id="formIngrediente">
+                <div class="campos">
+                    <div class="campo">
+                        <label for="nome">Nome do ingrediente</label>
+                        <input
+                            type="text"
+                            id="nome"
+                            name="nome"
+                            placeholder="Ex.: Farinha de trigo"
+                            maxlength="100"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="categoria">Categoria</label>
+                        <select id="categoria" name="categoria" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="Farinhas e massas">Farinhas e massas</option>
+                            <option value="Laticínios">Laticínios</option>
+                            <option value="Carnes e frios">Carnes e frios</option>
+                            <option value="Óleos e temperos">Óleos e temperos</option>
+                            <option value="Doces e recheios">Doces e recheios</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="quantidade">Quantidade disponível</label>
+                        <input
+                            type="number"
+                            id="quantidade"
+                            name="quantidade"
+                            min="0"
+                            step="any"
+                            placeholder="Ex.: 5"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="unidade">Unidade de medida</label>
+                        <select id="unidade" name="unidade" required>
+                            <option value="">Selecione uma unidade</option>
+                            <option value="kg">Quilograma (kg)</option>
+                            <option value="g">Grama (g)</option>
+                            <option value="L">Litro (L)</option>
+                            <option value="ml">Mililitro (ml)</option>
+                            <option value="unidade">Unidade</option>
+                            <option value="pacote">Pacote</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="minimo">Estoque mínimo</label>
+                        <input
+                            type="number"
+                            id="minimo"
+                            name="minimo"
+                            min="0"
+                            step="any"
+                            placeholder="Ex.: 2"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="acoes-formulario">
+                    <button type="submit">Cadastrar ingrediente</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="secao">
+            <div class="lista-cabecalho">
+                <div class="secao-cabecalho">
+                    <h2>Ingredientes cadastrados</h2>
+                    <p class="descricao">
+                        Consulte as quantidades disponíveis e a situação de cada ingrediente.
+                    </p>
+                </div>
+            </div>
+
+            {% if ingredientes %}
+            <div class="tabela-container">
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th>Ingrediente</th>
+                            <th>Categoria</th>
+                            <th>Quantidade</th>
+                            <th>Estoque mínimo</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for ingrediente in ingredientes %}
+                        <tr>
+                            <td class="nome-ingrediente">
+                                {{ ingrediente.nome }}
+                            </td>
+
+                            <td>{{ ingrediente.categoria }}</td>
+
+                            <td>
+                                {{ "%g"|format(ingrediente.quantidade) }}
+                                {{ ingrediente.unidade }}
+                            </td>
+
+                            <td>
+                                {{ "%g"|format(ingrediente.minimo) }}
+                                {{ ingrediente.unidade }}
+                            </td>
+
+                            <td>
+                                {% if ingrediente.quantidade <= ingrediente.minimo %}
+                                <span class="situacao alerta">Estoque baixo</span>
+                                {% else %}
+                                <span class="situacao adequado">Estoque adequado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+            <div class="vazio">
+                Nenhum ingrediente cadastrado ainda.
+                <br>
+                Utilize o formulário acima para adicionar o primeiro ingrediente.
+            </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        const formulario = document.getElementById("formIngrediente");
+
+        formulario.addEventListener("submit", function(evento) {
+            const nome = document.getElementById("nome").value.trim();
+            const quantidade = document.getElementById("quantidade").value;
+            const minimo = document.getElementById("minimo").value;
+
+            if (!nome) {
+                evento.preventDefault();
+                alert("Informe o nome do ingrediente.");
+                document.getElementById("nome").focus();
+                return;
+            }
+
+            if (
+                quantidade === "" ||
+                !Number.isFinite(Number(quantidade)) ||
+                Number(quantidade) < 0
+            ) {
+                evento.preventDefault();
+                alert("Informe uma quantidade válida, igual ou maior que zero.");
+                document.getElementById("quantidade").focus();
+                return;
+            }
+
+            if (
+                minimo === "" ||
+                !Number.isFinite(Number(minimo)) ||
+                Number(minimo) < 0
+            ) {
+                evento.preventDefault();
+                alert("Informe um estoque mínimo válido, igual ou maior que zero.");
+                document.getElementById("minimo").focus();
+            }
+        });
+    </script>
+</body>
+</html>
